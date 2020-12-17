@@ -1,4 +1,5 @@
-# Update this to use the appropriate parent image.
+# The httpd base image is used for this example.
+# CHANGE THIS to your production app image label.
 FROM jboss/wildfly:21.0.1.Final
 
 # Elevating to root privilege for OS level changes.
@@ -15,9 +16,9 @@ COPY ./td-agent-bit.conf /etc/td-agent-bit/
 # Dropping back to jboss privilege, root privilege not required from here.
 USER jboss
 
-# Step 1: Sleep 10 seconds and startup Fluentbit(td-agent-bit) - Make sure all
-#         log files are created before we start scanning, sometimes Fluentbit
+# Step 1: Sleep 10 seconds and startup Fluentbit(td-agent-bit) - This ensures
+#         all log files are created by the application. Sometimes Fluentbit
 #         misses files that don't exist before it starts.
-# Step 2: Run the actual container command (Taken from CMD in the base
-#         jboss/wildfly image)
+# Step 2: Run the actual container command ('/opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0'
+#         is taken from CMD in the base jboss/wildfly image)
 CMD sleep 10 && /opt/td-agent-bit/bin/td-agent-bit -c /etc/td-agent-bit/td-agent-bit.conf & /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
